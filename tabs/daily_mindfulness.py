@@ -52,6 +52,9 @@ def show():
             progress_bar.progress(100)
             status_text.text("✅ Challenge selesai! Selamat!")
             st.balloons()
+            
+        # Keterangan penting
+        st.caption("⚠️ Setelah challenge selesai, klik **‘📌 Tandai Challenge Selesai’** agar progresmu tersimpan di dashboard.")
 
     # ----------------- Simpan progress ke CSV -----------------
     os.makedirs("data", exist_ok=True)

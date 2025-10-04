@@ -14,20 +14,19 @@ def show():
 
     mood = None
     if os.path.exists(mood_file):
-        # Baca mood dan ambil mood terakhir hari ini
         df_mood = pd.read_csv(mood_file, names=["date","mood"], header=None)
-        today_moods = df_mood[df_mood['date']==today_str]['mood'].values
-        if len(today_moods) > 0:
-            mood = today_moods[-1]  # gunakan mood terbaru
+        today_mood = df_mood[df_mood['date']==today_str]['mood'].values
+        if len(today_mood) > 0:
+            mood = today_mood[0]
 
-    # Jika mood belum ada, minta user memilih
+    # ----------------- Jika mood belum tercatat, minta user memilih -----------------
     if not mood:
         st.warning("Mood hari ini belum tercatat. Silakan pilih moodmu agar rekomendasi lebih personal.")
         mood_options = ["Sedih", "Cemas", "Stres", "Senang", "Biasa saja"]
         mood = st.selectbox("Pilih moodmu hari ini:", mood_options)
+
         if st.button("Simpan Mood"):
             new_row = pd.DataFrame({"date":[today_str], "mood":[mood]})
-            os.makedirs("data", exist_ok=True)
             if os.path.exists(mood_file):
                 new_row.to_csv(mood_file, mode='a', header=False, index=False)
             else:
@@ -45,7 +44,7 @@ def show():
         "Allahu Akbar": "- Mengingat kebesaran Allah.",
         "Alhamdulillahi rabbil 'alamin": "- Mensyukuri nikmat Allah.",
         "La hawla wa la quwwata illa billah": "- Menyerahkan diri pada kehendak Allah.",
-        "Subhanallahi wa bihamdihi subhanallahil 'azhim': "- Menghapus dosa dan meningkatkan pahala.",
+        "Subhanallahi wa bihamdihi subhanallahil 'azhim": "- Menghapus dosa dan meningkatkan pahala.",
         "Astaghfirullahal lazi la ilaha illa huwa al-hayyul qayyum": "- Menyucikan hati dan pikiran.",
         "Allahumma inni as'aluka al-jannah": "- Berdoa untuk surga.",
         "Allahumma a'udzu bika min an-nar": "- Berdoa perlindungan dari neraka.",
@@ -60,7 +59,7 @@ def show():
     # ----------------- Rekomendasi zikir Berdasarkan Mood -----------------
     mood_to_zikir = {
         "Sedih": ["La ilaha illallah", "Subhanallah wa bihamdihi"],
-        "Cemas": ["Astaghfirullahal 'azhim', "Allahu Akbar"],
+        "Cemas": ["Astaghfirullahal 'azhim", "Allahu Akbar"],
         "Stres": ["La hawla wa la quwwata illa billah", "Alhamdulillahi rabbil 'alamin"],
         "Senang": ["Subhanallahi wa bihamdihi subhanallahil 'azhim", "Astaghfirullahal lazi la ilaha illa huwa al-hayyul qayyum"],
         "Biasa saja": random.sample(list(zikir_df['zikir_text']), min(2, len(zikir_df)))

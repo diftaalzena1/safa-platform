@@ -111,6 +111,9 @@ def show():
         else:
             st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
 
+    # ----------------- Spasi pemisah antar bagian -----------------
+    st.markdown("")
+    
     # ----------------- Statistik Streak -----------------
     if not done_df.empty and 'date' in done_df.columns:
         done_df['date'] = pd.to_datetime(done_df['date'], errors='coerce')

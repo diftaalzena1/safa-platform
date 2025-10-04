@@ -1,23 +1,26 @@
 import streamlit as st 
 import pandas as pd
 import os
-from datetime import date, timedelta
+from datetime import datetime, timedelta, date, timezone
 import random
 
 def show():
     st.header("Rekomendasi Hari Ini")
     st.info("Rekomendasi zikir dan challenge disesuaikan dengan mood dan progres harianmu.")
 
+    # ----------------- Tanggal & Waktu Sekarang WIB -----------------
+    now_wib = datetime.now(timezone(timedelta(hours=7)))
+    today_str = now_wib.strftime("%Y-%m-%d")
+    st.caption(f"🕒 Waktu Saat Ini (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")
+
     # ----------------- Load Mood Hari Ini -----------------
     mood_file = "data/mood_data.csv"
-    today_str = date.today().strftime("%Y-%m-%d")
-
     mood = None
     if os.path.exists(mood_file):
         df_mood = pd.read_csv(mood_file, names=["date","mood"], header=None)
-        today_mood = df_mood[df_mood['date']==today_str]['mood'].values
-        if len(today_mood) > 0:
-            mood = today_mood[0]
+        today_moods = df_mood[df_mood['date']==today_str]['mood'].values
+        if len(today_moods) > 0:
+            mood = today_moods[-1]  # ambil mood terakhir hari ini
 
     # ----------------- Jika mood belum tercatat, minta user memilih -----------------
     if not mood:

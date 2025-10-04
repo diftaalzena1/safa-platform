@@ -81,7 +81,11 @@ def show():
         if df_j.empty:
             st.info("Belum ada data jurnal. Silakan tambah di 'data/journal_data.csv'.")
         else:
-            st.dataframe(df_j.sort_values('date', ascending=False))
+            # Format tanggal agar tidak tampil jam
+            df_j_display = df_j.copy()
+            df_j_display['date'] = df_j_display['date'].dt.strftime("%Y-%m-%d")
+
+            st.dataframe(df_j_display.sort_values('date', ascending=False))
             st.info("Interpretasi: Membaca jurnal membantu refleksi dan evaluasi diri.")
 
     # ------------------ Mood ------------------

@@ -55,7 +55,7 @@ def show():
 
     # Mood Hari Ini
     today_mood = df_m[df_m['date'] == today_dt]
-    avg_mood_today = today_mood['mood'].map({"Senang":5,"Biasa saja":3,"Sedih":2,"Cemas":1,"Stres":0}).mean() if not today_mood.empty else 0
+    avg_mood_today = today_mood['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1}).mean() if not today_mood.empty else 0
     col_s2.metric("😊 Mood Rata-rata Hari Ini", f"{avg_mood_today:.1f}/5")
 
     # zikir Hari Ini & Bulan Ini

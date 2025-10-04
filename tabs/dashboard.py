@@ -170,7 +170,7 @@ def show():
             st.plotly_chart(fig_heat, use_container_width=True)
 
     # ------------------ zikir ------------------
-    with st.expander("🕌 Zikir Harian & Progress (Read-Only)"):
+    with st.expander("🕌 Zikir Harian & Progress"):
         if df_zikir_log.empty:
             st.info("Belum ada data zikir dari Guided Zikir.")
         else:

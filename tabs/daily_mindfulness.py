@@ -2,12 +2,16 @@ import streamlit as st
 import pandas as pd
 import os
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone  
 
 def show():
     st.header("Daily Mindfulness Challenge")
     st.info("Pilih challenge yang ingin kamu selesaikan hari ini (1–5 menit).")
 
+    # waktu lokal WIB
+    now_wib = datetime.now(timezone(timedelta(hours=7)))  
+    today_str = now_wib.strftime("%Y-%m-%d")               
+    
     # ----------------- Daftar Challenge -----------------
     challenges = [
         {"title":"Meditasi Pernapasan 2 Menit", "desc":"Tarik dan hembuskan napas perlahan sambil fokus pada ketenangan hati.", "duration":120},
@@ -49,9 +53,6 @@ def show():
     os.makedirs("data", exist_ok=True)
     done_file = "data/challenge_done.csv"
 
-    # Tambahan waktu lokal WIB
-    now_wib = datetime.now(timezone(timedelta(hours=7)))
-
     if os.path.exists(done_file):
         try:
             done_df = pd.read_csv(done_file)
@@ -61,3 +62,30 @@ def show():
             done_df = pd.DataFrame(columns=["date","challenge"])
     else:
         done_df = pd.DataFrame(columns=["date","challenge"])
+
+    # Hindari error kalau CSV kosong
+    if not done_df.empty and 'date' in done_df.columns:
+        already_done = ((done_df['date']==today_str) & (done_df['challenge']==challenge['title'])).any()
+    else:
+        already_done = False
+
+    if st.button("📌 Tandai Challenge Selesai"):
+        if not already_done:
+            new_entry = pd.DataFrame({"date":[today_str], "challenge":[challenge['title']]})
+            new_entry.to_csv(done_file, mode="a", index=False, header=not os.path.exists(done_file))
+            st.success("Challenge hari ini telah ditandai selesai.")
+        else:
+            st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
+
+    # ----------------- Statistik Streak -----------------
+    if not done_df.empty and 'date' in done_df.columns:
+        done_df['date'] = pd.to_datetime(done_df['date'], errors='coerce')
+        done_dates = done_df['date'].dt.date.dropna().unique()
+        streak = 0
+        current_day = date.today()
+        while current_day in done_dates:
+            streak += 1
+            current_day -= timedelta(days=1)
+        st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
+    else:
+        st.info("Belum ada streak challenge.")

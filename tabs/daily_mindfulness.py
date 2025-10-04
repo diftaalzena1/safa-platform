@@ -2,16 +2,17 @@ import streamlit as st
 import pandas as pd
 import os
 import time
-from datetime import date, datetime, timedelta, timezone  
+from datetime import date, datetime, timedelta, timezone
 
 def show():
     st.header("Daily Mindfulness Challenge")
     st.info("Pilih challenge yang ingin kamu selesaikan hari ini (1–5 menit).")
 
-    # waktu lokal WIB
-    now_wib = datetime.now(timezone(timedelta(hours=7)))  
-    today_str = now_wib.strftime("%Y-%m-%d")               
-    
+    # ----------------- Waktu Lokal WIB -----------------
+    now_wib = datetime.now(timezone(timedelta(hours=7)))
+    today_str = now_wib.strftime("%Y-%m-%d")
+    st.caption(f"🕒 Tanggal & Waktu Sekarang (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")
+
     # ----------------- Daftar Challenge -----------------
     challenges = [
         {"title":"Meditasi Pernapasan 2 Menit", "desc":"Tarik dan hembuskan napas perlahan sambil fokus pada ketenangan hati.", "duration":120},
@@ -22,7 +23,7 @@ def show():
         {"title":"Refleksi Hati", "desc":"Tulis 1 hal yang bisa diperbaiki untuk menjadi versi diri yang lebih baik.", "duration":180}
     ]
 
-    # Pilih challenge
+    # ----------------- Pilih Challenge -----------------
     challenge_titles = [c['title'] for c in challenges]
     selected_title = st.selectbox("Pilih challenge hari ini:", challenge_titles)
     challenge = next(c for c in challenges if c['title'] == selected_title)
@@ -31,23 +32,26 @@ def show():
     st.write(challenge['desc'])
     st.write(f"⏱ Durasi: {challenge['duration']//60} menit {challenge['duration']%60} detik")
 
-    # ----------------- Mulai Challenge -----------------
-    if st.button("▶️ Mulai Challenge"):
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        duration = challenge['duration']
+    # ----------------- Tombol Aksi -----------------
+    col1, col2 = st.columns(2)
 
-        for elapsed in range(duration):
-            remaining = duration - elapsed
-            mins, secs = divmod(remaining, 60)
-            status_text.text(f"⏳ Sisa waktu: {mins:02d}:{secs:02d}")
-            progress = int((elapsed + 1) / duration * 100)
-            progress_bar.progress(progress)
-            time.sleep(1)
+    with col1:
+        if st.button("▶️ Mulai Challenge"):
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            duration = challenge['duration']
 
-        progress_bar.progress(100)
-        status_text.text("✅ Challenge selesai! Selamat!")
-        st.balloons()
+            for elapsed in range(duration):
+                remaining = duration - elapsed
+                mins, secs = divmod(remaining, 60)
+                status_text.text(f"⏳ Sisa waktu: {mins:02d}:{secs:02d}")
+                progress = int((elapsed + 1) / duration * 100)
+                progress_bar.progress(progress)
+                time.sleep(1)
+
+            progress_bar.progress(100)
+            status_text.text("✅ Challenge selesai! Selamat!")
+            st.balloons()
 
     # ----------------- Simpan progress ke CSV -----------------
     os.makedirs("data", exist_ok=True)
@@ -63,19 +67,20 @@ def show():
     else:
         done_df = pd.DataFrame(columns=["date","challenge"])
 
-    # Hindari error kalau CSV kosong
+    # ----------------- Cek Challenge Hari Ini -----------------
     if not done_df.empty and 'date' in done_df.columns:
         already_done = ((done_df['date']==today_str) & (done_df['challenge']==challenge['title'])).any()
     else:
         already_done = False
 
-    if st.button("📌 Tandai Challenge Selesai"):
-        if not already_done:
-            new_entry = pd.DataFrame({"date":[today_str], "challenge":[challenge['title']]})
-            new_entry.to_csv(done_file, mode="a", index=False, header=not os.path.exists(done_file))
-            st.success("Challenge hari ini telah ditandai selesai.")
-        else:
-            st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
+    with col2:
+        if st.button("📌 Tandai Challenge Selesai"):
+            if not already_done:
+                new_entry = pd.DataFrame({"date":[today_str], "challenge":[challenge['title']]})
+                new_entry.to_csv(done_file, mode="a", index=False, header=not os.path.exists(done_file))
+                st.success("Challenge hari ini telah ditandai selesai.")
+            else:
+                st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
 
     # ----------------- Statistik Streak -----------------
     if not done_df.empty and 'date' in done_df.columns:

@@ -37,6 +37,14 @@ def show():
         st.session_state.timer_running = False
     if 'elapsed_time' not in st.session_state:
         st.session_state.elapsed_time = 0
+    if 'current_challenge' not in st.session_state:
+        st.session_state.current_challenge = selected_title
+
+    # Reset timer jika user memilih challenge lain
+    if st.session_state.current_challenge != selected_title:
+        st.session_state.elapsed_time = 0
+        st.session_state.timer_running = False
+        st.session_state.current_challenge = selected_title
 
     # ----------------- Tombol Kontrol -----------------
     col1, col2, col3 = st.columns(3)

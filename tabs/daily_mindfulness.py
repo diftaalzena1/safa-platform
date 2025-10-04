@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import time
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 
 def show():
     st.header("Daily Mindfulness Challenge")
@@ -32,29 +32,46 @@ def show():
     st.write(challenge['desc'])
     st.write(f"⏱ Durasi: {challenge['duration']//60} menit {challenge['duration']%60} detik")
 
-    # ----------------- Tombol Aksi -----------------
-    col1, col2 = st.columns(2)
+    # ----------------- Session State Timer -----------------
+    if 'timer_running' not in st.session_state:
+        st.session_state.timer_running = False
+    if 'elapsed_time' not in st.session_state:
+        st.session_state.elapsed_time = 0
+
+    # ----------------- Tombol Kontrol -----------------
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         if st.button("▶️ Mulai Challenge"):
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            duration = challenge['duration']
+            st.session_state.timer_running = True
 
-            for elapsed in range(duration):
-                remaining = duration - elapsed
-                mins, secs = divmod(remaining, 60)
-                status_text.text(f"⏳ Sisa waktu: {mins:02d}:{secs:02d}")
-                progress = int((elapsed + 1) / duration * 100)
-                progress_bar.progress(progress)
-                time.sleep(1)
+    with col2:
+        if st.button("⏸️ Pause Challenge"):
+            st.session_state.timer_running = False
 
-            progress_bar.progress(100)
-            status_text.text("✅ Challenge selesai! Selamat!")
-            st.balloons()
-            
-        # Keterangan penting
-        st.caption("⚠️ Setelah challenge selesai, klik **‘📌 Tandai Challenge Selesai’** agar progresmu tersimpan di dashboard.")
+    with col3:
+        if st.button("⏹️ Stop / Reset Challenge"):
+            st.session_state.timer_running = False
+            st.session_state.elapsed_time = 0
+
+    # ----------------- Progress Timer -----------------
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    duration = challenge['duration']
+
+    for elapsed in range(st.session_state.elapsed_time, duration):
+        if not st.session_state.timer_running:
+            break
+        remaining = duration - elapsed
+        mins, secs = divmod(remaining, 60)
+        status_text.text(f"⏳ Sisa waktu: {mins:02d}:{secs:02d}")
+        progress_bar.progress(int((elapsed + 1) / duration * 100))
+        st.session_state.elapsed_time = elapsed + 1
+        time.sleep(1)
+
+    if st.session_state.elapsed_time >= duration:
+        status_text.text("✅ Challenge selesai! Selamat!")
+        st.balloons()
 
     # ----------------- Simpan progress ke CSV -----------------
     os.makedirs("data", exist_ok=True)
@@ -76,18 +93,16 @@ def show():
     else:
         already_done = False
 
-    with col2:
-        if st.button("📌 Tandai Challenge Selesai"):
-            if not already_done:
-                new_entry = pd.DataFrame({"date":[today_str], "challenge":[challenge['title']]})
-                new_entry.to_csv(done_file, mode="a", index=False, header=not os.path.exists(done_file))
-                st.success("Challenge hari ini telah ditandai selesai.")
-            else:
-                st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
+    st.markdown("⚠️ Setelah challenge selesai, klik ‘📌 Tandai Challenge Selesai’ agar progresmu tersimpan di dashboard.\n")
 
-    # ----------------- Spasi pemisah antar bagian -----------------
-    st.markdown("")
-    
+    if st.button("📌 Tandai Challenge Selesai"):
+        if not already_done:
+            new_entry = pd.DataFrame({"date":[today_str], "challenge":[challenge['title']]})
+            new_entry.to_csv(done_file, mode="a", index=False, header=not os.path.exists(done_file))
+            st.success("Challenge hari ini telah ditandai selesai.")
+        else:
+            st.info("Challenge hari ini sudah ditandai selesai sebelumnya.")
+
     # ----------------- Statistik Streak -----------------
     if not done_df.empty and 'date' in done_df.columns:
         done_df['date'] = pd.to_datetime(done_df['date'], errors='coerce')

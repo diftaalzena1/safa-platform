@@ -103,7 +103,7 @@ def show():
             st.altair_chart(chart, use_container_width=True)
 
             # ------------------ Mood Mingguan ------------------
-            df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":3,"Sedih":2,"Cemas":1,"Stres":0})
+            df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
             df_m_line = df_m.groupby('date')['mood_score'].mean().reset_index()
             st.subheader("📈 Mood Mingguan (Rata-rata Skor)")
             st.altair_chart(
@@ -153,7 +153,7 @@ def show():
                     colorscale=color_scale,
                     zmin=0,
                     zmax=5,
-                    colorbar=dict(title='Rata-rata Mood (0=Stres,5=Senang)'),
+                    colorbar=dict(title='Rata-rata Mood (1=Stres,5=Senang)'),
                     hoverinfo='text',
                     text=hover_text
                 )

@@ -27,7 +27,8 @@ def show():
     else:
         log_df = pd.DataFrame(columns=["date","zikir_id"])
 
-    today = pd.to_datetime(date.today().strftime("%Y-%m-%d"))
+    now_wib = datetime.now(timezone(timedelta(hours=7)))
+    today = pd.to_datetime(now_wib.strftime("%Y-%m-%d"))
 
     zikir_hikmah = {
         "Subhanallah wa bihamdihi": "- Membersihkan hati dari kesombongan.",

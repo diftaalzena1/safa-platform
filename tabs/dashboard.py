@@ -313,6 +313,9 @@ def show():
 
             # --- History ---
             st.subheader("📜 Riwayat Challenge")
-            st.dataframe(df_challenge_done.sort_values("date", ascending=False).reset_index(drop=True))
-        else:
-            st.info("Belum ada data challenge. Selesaikan challenge di tab Daily Mindfulness untuk melihat progres di sini.")
+            if not df_challenge_done.empty:
+                df_ch_display = df_challenge_done.copy()
+                df_ch_display['date'] = df_ch_display['date'].dt.strftime("%Y-%m-%d")
+                st.dataframe(df_ch_display.sort_values("date", ascending=False).reset_index(drop=True))
+            else:
+                st.info("Belum ada data challenge. Selesaikan challenge di tab Daily Mindfulness untuk melihat progres di sini.")

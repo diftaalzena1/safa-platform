@@ -52,19 +52,24 @@ def show():
     done_dates = df_challenge_done['date'].dt.date.unique() if not df_challenge_done.empty else []
     streak_challenge = calculate_streak(done_dates)
     col_s1.metric("🔥 Streak Challenge", f"{streak_challenge} hari")
+    col_s1.caption("Jumlah hari berturut-turut menyelesaikan challenge")
 
     # Mood Hari Ini
     today_mood = df_m[df_m['date'] == today_dt]
     avg_mood_today = today_mood['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1}).mean() if not today_mood.empty else 0
     col_s2.metric("😊 Mood Rata-rata Hari Ini", f"{avg_mood_today:.1f}/5")
+    col_s2.caption("Skala Mood: Senang=5, Biasa saja=4, Sedih=3, Cemas=2, Stres=1")
 
-    # zikir Hari Ini & Bulan Ini
+
+    # Zikir Hari Ini & Bulan Ini
     zikir_today = df_zikir_log[df_zikir_log['date'] == today_dt] if not df_zikir_log.empty else pd.DataFrame()
     zikir_month = df_zikir_log[df_zikir_log['date'].dt.month == today_dt.month] if not df_zikir_log.empty else pd.DataFrame()
     total_zikir_today = len(zikir_today)
     total_zikir_month = len(zikir_month)
     col_s3.metric("🕌 Zikir Hari Ini", total_zikir_today)
+    col_s3.caption("Jumlah zikir yang dibaca hari ini")
     col_s4.metric("🕌 Zikir Bulan Ini", total_zikir_month)
+    col_s4.caption("Jumlah zikir yang dibaca selama bulan ini")
 
     # Badge motivasi
     if streak_challenge >= 7:

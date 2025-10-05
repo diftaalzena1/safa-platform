@@ -5,14 +5,13 @@ from datetime import datetime, timedelta, date, timezone
 import random
 
 def show():
-    st.header("Rekomendasi Hari Ini")
-    st.info("Rekomendasi zikir dan challenge disesuaikan dengan mood dan progres harianmu.")
+    st.header("🌿✨ Rekomendasi Hari Ini")
+    st.info("Rekomendasi zikir dan challenge disesuaikan dengan mood dan progres harianmu agar lebih personal.")
 
     # ----------------- Tanggal & Waktu Sekarang WIB -----------------
     now_wib = datetime.now(timezone(timedelta(hours=7)))
     today_str = now_wib.strftime("%Y-%m-%d")
-    st.caption(f"🕒 Waktu Saat Ini (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")
-
+    
     # ----------------- Load Mood Hari Ini -----------------
     mood_file = "data/mood_data.csv"
     mood = None
@@ -24,17 +23,17 @@ def show():
 
     # ----------------- Jika mood belum tercatat, minta user memilih -----------------
     if not mood:
-        st.warning("Mood hari ini belum tercatat. Silakan pilih moodmu agar rekomendasi lebih personal.")
+        st.warning("Mood hari ini belum tercatat. Silakan pilih moodmu atau kembali ke tab Daily Journaling agar rekomendasi lebih personal.")
         mood_options = ["Sedih", "Cemas", "Stres", "Senang", "Biasa saja"]
         mood = st.selectbox("Pilih moodmu hari ini:", mood_options)
 
-        if st.button("Simpan Mood"):
+        if st.button("💾 Simpan Mood"):
             new_row = pd.DataFrame({"date":[today_str], "mood":[mood]})
             if os.path.exists(mood_file):
                 new_row.to_csv(mood_file, mode='a', header=False, index=False)
             else:
                 new_row.to_csv(mood_file, index=False, header=False)
-            st.success(f"Mood '{mood}' berhasil dicatat untuk hari ini!")
+            st.success(f"✅ Mood '{mood}' berhasil dicatat untuk hari ini!")
 
     st.subheader(f"😊 Mood Hari Ini: {mood}")
 
@@ -69,7 +68,7 @@ def show():
     }
 
     recommended_zikir = mood_to_zikir.get(mood, random.sample(list(zikir_df['zikir_text']), min(2, len(zikir_df))))
-    st.subheader("Zikir Direkomendasikan Hari Ini")
+    st.subheader("🕌 Zikir Direkomendasikan Hari Ini")
     for zikir in recommended_zikir:
         st.write(f"- **{zikir}** {zikir_hikmah.get(zikir,'')}")
 
@@ -100,10 +99,10 @@ def show():
     # Rekomendasi challenge
     if streak >= 5:
         recommended_challenges = random.sample(challenges, 1)
-        st.subheader(f"Challenge Ringan (Streak: {streak} hari)")
+        st.subheader(f"💤 Challenge Ringan (Streak: {streak} hari)")
     else:
         recommended_challenges = random.sample(challenges, 2)
-        st.subheader(f"Challenge Hari Ini (Streak: {streak} hari)")
+        st.subheader(f"🏃 Challenge Hari Ini (Streak: {streak} hari)")
 
     for c in recommended_challenges:
         st.write(f"- **{c['title']}**: {c['desc']} (Durasi: {c['duration']//60} menit)")

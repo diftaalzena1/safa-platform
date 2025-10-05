@@ -79,6 +79,9 @@ def show():
         "- Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
     )
 
+    # Format waktu lebih lengkap
+    formatted_time = wib_time.strftime("%A, %d %B %Y %H:%M:%S")
+
     # Waktu saat ini di bawah
     st.markdown("---")
-    st.markdown(f"⏰ **Waktu saat ini (WIB): {wib_time.strftime('%H:%M:%S')}**")
+    st.markdown(f"⏰ **Tanggal & Waktu Sekarang (WIB): {formatted_time}**")

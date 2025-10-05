@@ -54,9 +54,9 @@ def show():
     st.markdown("### 🔹 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
-        "- ✍️ Menulis refleksi harian dan bersyukur\n"
-        "- 🕋 Zikir & meditasi harian\n"
-        "- 📊 Memantau mood dan perkembangan hatimu"
+        "✍️ Menulis refleksi harian dan bersyukur\n"
+        "🕋 Zikir & meditasi harian\n"
+        "📊 Memantau mood dan perkembangan hatimu"
     )
 
     # Motivasi harian

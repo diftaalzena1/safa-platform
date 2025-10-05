@@ -1,21 +1,19 @@
 import streamlit as st
 from datetime import datetime
-from zoneinfo import ZoneInfo  
-from streamlit import st_autorefresh
+try:
+    # Python 3.9+ built-in zoneinfo
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo  # jika Python <3.9, install backports-zoneinfo
 
-# Fungsi utama dashboard
 def show():
     st.title("🌿 Selamat Datang di SAFA")
     st.subheader("Your Spiritual Assistant for Faith & Awareness~")
 
-    # Input nama panggilan
+    # Meminta nama panggilan pengguna
     nickname = st.text_input("Hai! Siapa nama panggilanmu?", "")
 
-    # Placeholder untuk jam live
-    clock_placeholder = st.empty()
-
-    # Update jam live menggunakan st_autorefresh
-    count = st_autorefresh(interval=1000, key="clock")  # refresh setiap 1000 ms = 1 detik
+    # Dapatkan waktu WIB
     wib_time = datetime.now(ZoneInfo("Asia/Jakarta"))
     hour = wib_time.hour
 
@@ -27,15 +25,20 @@ def show():
     else:
         greeting = "Malam"
 
-    greeting_text = f"Selamat {greeting}{', **'+nickname+'**' if nickname else ''}! 💛"
-    clock_placeholder.markdown(f"⏰ Waktu saat ini (WIB): **{wib_time.strftime('%H:%M:%S')}**\n\n{greeting_text}")
+    if nickname:
+        st.write(f"Selamat {greeting}, **{nickname}**! 💛")
+        st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
+    else:
+        st.write(f"Selamat {greeting}! 💛")
+        st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
 
-    # -------------------- Mood Interaktif --------------------
+    st.markdown(f"⏰ Waktu saat ini (WIB): {wib_time.strftime('%H:%M:%S')}")
+
+    # Interaktif: mood hari ini
     mood = st.radio("Bagaimana perasaanmu hari ini?", ["😊 Senang", "😐 Biasa saja", "😔 Sedih", "😟 Cemas", "😣 Stres"])
     if mood:
         st.write(f"Terima kasih telah berbagi, {nickname or 'teman'}! 🌱")
 
-    # -------------------- Fitur SAFA --------------------
     st.markdown("### 🔹 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"

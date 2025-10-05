@@ -36,11 +36,9 @@ def show():
         st.write(f"Selamat {greeting}! 💛")
         st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
 
-    # Tampilkan waktu saat ini
-    st.markdown(f"⏰ Waktu saat ini (WIB): **{wib_time.strftime('%H:%M:%S')}**")
-
     # Interaktif: mood hari ini
-    st.markdown("### 🌤 Bagaimana perasaanmu hari ini?")
+    st.markdown("### 🌈 Bagaimana perasaanmu hari ini?")
+    st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)  # kurangi jarak vertikal
     mood = st.radio(
         "",
         ["😊 Senang", "😐 Biasa saja", "😔 Sedih", "😟 Cemas", "😣 Stres"],
@@ -54,9 +52,9 @@ def show():
     st.markdown("### 🔹 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
-        "✍️ Menulis refleksi harian dan bersyukur\n"
-        "🕋 Zikir & meditasi harian\n"
-        "📊 Memantau mood dan perkembangan hatimu"
+        "- ✍️ Menulis refleksi harian dan bersyukur\n"
+        "- 🕋 Zikir & meditasi harian\n"
+        "- 📊 Memantau mood dan perkembangan hatimu"
     )
 
     # Motivasi harian
@@ -68,3 +66,7 @@ def show():
         "- 😊 Senyum dan syukuri satu hal kecil hari ini.\n"
         "- 🌿 Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
     )
+
+    # Tampilkan waktu saat ini di bagian paling bawah
+    st.markdown("---")
+    st.markdown(f"⏰ **Waktu saat ini (WIB): {wib_time.strftime('%H:%M:%S')}**")

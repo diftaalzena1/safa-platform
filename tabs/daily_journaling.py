@@ -4,11 +4,11 @@ import pandas as pd
 from datetime import datetime, timezone, timedelta
 
 def show():
-    st.header("Daily Journaling Islami")
+    st.header("🌿✍️ Daily Journaling Islami")
     st.info("Tips: Luangkan 5-10 menit menulis untuk refleksi harianmu.")
 
     # ----------------- Template Refleksi -----------------
-    st.markdown("#### Prompt Refleksi Harian ✍️")
+    st.markdown("#### 💭 Prompt Refleksi Harian")
     st.write(
         "- Hari ini aku bersyukur karena…\n"
         "- Satu hal yang membuatku bahagia hari ini…\n"

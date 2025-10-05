@@ -125,6 +125,3 @@ def show():
         st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
     else:
         st.info("Belum ada streak challenge.")
-
-    st.markdown("---")
-    st.caption(f"🕒 Tanggal & Waktu Sekarang (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")

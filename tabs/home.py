@@ -38,7 +38,7 @@ def show():
 
     # Interaktif: mood hari ini
     st.markdown("### 🌈 Bagaimana perasaanmu hari ini?")
-    st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)  # kurangi jarak vertikal
+    st.markdown("<div style='margin-top:-2px'></div>", unsafe_allow_html=True)  # kurangi jarak vertikal
     mood = st.radio(
         "",
         ["😊 Senang", "😐 Biasa saja", "😔 Sedih", "😟 Cemas", "😣 Stres"],

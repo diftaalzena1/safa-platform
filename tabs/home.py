@@ -33,7 +33,7 @@ def show():
         st.write(f"Selamat {greeting}! 💛")
     st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
 
-    # Mood (versi jarak sangat rapat)
+    # Mood 
     st.markdown(
         """
         <style>
@@ -60,7 +60,7 @@ def show():
     if mood:
         st.success(f"Terima kasih telah berbagi, {nickname or 'teman'} 🌱 Semoga hatimu selalu tenang.")
 
-    # Fitur SAFA (tanpa emotikon)
+    # Fitur SAFA 
     st.markdown("### 🔹 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
@@ -69,7 +69,7 @@ def show():
         "- Memantau mood dan perkembangan hatimu"
     )
 
-    # Motivasi Hari Ini (tanpa emotikon)
+    # Motivasi Hari Ini 
     st.markdown("### 💡 Motivasi Hari Ini")
     st.info("“Sesungguhnya bersama kesulitan ada kemudahan.” (QS. Al-Insyirah: 6)")
 

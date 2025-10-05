@@ -211,7 +211,7 @@ def show():
                 df_corr = pd.merge(df_m_line, zikir_per_day, on="date", how="left").fillna(0)
                 corr_value = df_corr['mood_score'].corr(df_corr['zikir_count'])
                 st.success(f"Korelasi rata-rata mood vs jumlah zikir harian: {corr_value:.2f}")
-                st.info("Interpretasi: Korelasi ini menunjukkan hubungan antara mood harian dan jumlah zikir. Nilai semakin positif → mood cenderung lebih baik jika rutin zikir.")
+                st.info("Interpretasi: Semakin banyak zikir yang dilakukan, mood harian cenderung lebih baik jika korelasi positif. Nilai dekat 0 berarti hubungan antara mood dan jumlah zikir tidak terlalu terlihat.")
                 
     # ------------------ Challenge Dashboard ------------------
     with st.expander("🎯 Challenge Mindfulness Harian"):

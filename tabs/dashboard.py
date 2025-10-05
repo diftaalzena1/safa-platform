@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
 import os
 from datetime import date, timedelta
@@ -43,7 +43,7 @@ def show():
         if not df.empty and 'date' in df.columns:
             df['date'] = pd.to_datetime(df['date'], errors='coerce')
 
-    today_dt = pd.to_datetime(date.today().strftime("%Y-%m-%d"))
+    today_dt = date.today()  # Hanya date, tidak perlu datetime
 
     # ------------------- Summary Panel -------------------
     col_s1, col_s2, col_s3, col_s4 = st.columns(4)
@@ -55,13 +55,13 @@ def show():
     col_s1.caption("Jumlah hari berturut-turut menyelesaikan challenge")
 
     # Mood Hari Ini
-    today_mood = df_m[df_m['date'] == today_dt]
+    today_mood = df_m[df_m['date'].dt.date == today_dt] if not df_m.empty else pd.DataFrame()
     avg_mood_today = today_mood['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1}).mean() if not today_mood.empty else 0
     col_s2.metric("😊 Mood Rata-rata Hari Ini", f"{avg_mood_today:.1f}/5")
     col_s2.caption("Skala Mood: Senang=5, Biasa saja=4, Sedih=3, Cemas=2, Stres=1")
 
     # Zikir Hari Ini & Bulan Ini
-    zikir_today = df_zikir_log[df_zikir_log['date'] == today_dt] if not df_zikir_log.empty else pd.DataFrame()
+    zikir_today = df_zikir_log[df_zikir_log['date'].dt.date == today_dt] if not df_zikir_log.empty else pd.DataFrame()
     zikir_month = df_zikir_log[df_zikir_log['date'].dt.month == today_dt.month] if not df_zikir_log.empty else pd.DataFrame()
     total_zikir_today = len(zikir_today)
     total_zikir_month = len(zikir_month)
@@ -85,13 +85,19 @@ def show():
         if df_j.empty:
             st.info("Belum ada data jurnal. Silakan tambah di 'data/journal_data.csv'.")
         else:
-            # Format tanggal agar tampil rapi
             df_j_display = df_j.copy()
             df_j_display['date'] = df_j_display['date'].dt.strftime("%Y-%m-%d")
             st.dataframe(df_j_display.sort_values('date', ascending=False))
             st.info("Interpretasi: Membaca jurnal membantu refleksi dan evaluasi diri.")
 
     # ------------------ Mood ------------------
+    # Buat df_m_line global sebelum Zikir
+    if not df_m.empty:
+        df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
+        df_m_line = df_m.groupby('date')['mood_score'].mean().reset_index()
+    else:
+        df_m_line = pd.DataFrame()
+
     with col2.expander("😊 Mood Harian"):
         if df_m.empty:
             st.info("Belum ada data mood.")
@@ -106,8 +112,6 @@ def show():
             st.altair_chart(chart, use_container_width=True)
 
             # Mood Mingguan
-            df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
-            df_m_line = df_m.groupby('date')['mood_score'].mean().reset_index()
             st.subheader("📈 Mood Mingguan (Rata-rata Skor)")
             st.altair_chart(
                 alt.Chart(df_m_line).mark_line(point=True).encode(

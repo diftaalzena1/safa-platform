@@ -92,6 +92,7 @@ def show_sidebar():
         """
         <div class='sidebar-footer'>
             Oleh: Difta Alzena Sakhi<br>
+            Prodi: Sains Data<br>
             Instansi: UPN 'Veteran' Jawa Timur
         </div>
         <style>

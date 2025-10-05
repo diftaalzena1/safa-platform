@@ -103,6 +103,7 @@ def show():
                 color=alt.Color('mood:N', scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())))
             )
             st.altair_chart(chart, use_container_width=True)
+            st.info("Interpretasi: Bar chart ini menunjukkan distribusi mood harian. Warna hijau menunjukkan mood Senang, merah menunjukkan Stres, dan lainnya sesuai legenda.")
 
             # Mood Mingguan
             df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
@@ -114,7 +115,8 @@ def show():
                 ),
                 use_container_width=True
             )
-
+            st.info("Interpretasi: Grafik ini menunjukkan rata-rata skor mood per hari. Skor lebih tinggi berarti mood lebih positif.")
+            
             # Heatmap Mood Bulanan
             st.subheader("🔥 Heatmap Mood Bulanan")
             df_m['month'] = df_m['date'].dt.month
@@ -149,7 +151,8 @@ def show():
             fig_heat.update_xaxes(title="Bulan", type='category', categoryorder='array', categoryarray=heatmap_pivot.columns.tolist())
             fig_heat.update_yaxes(title="Hari/Tanggal", autorange="reversed")
             st.plotly_chart(fig_heat, use_container_width=True)
-
+            st.info("Interpretasi: Heatmap menunjukkan pola mood sepanjang bulan. Warna hijau = mood positif, merah = mood negatif. Bisa digunakan untuk melihat tren emosional harian dan bulanan.")
+            
     # ------------------ Zikir ------------------
     with st.expander("🕌 Zikir Harian & Progress"):
         if df_zikir_log.empty:
@@ -159,16 +162,19 @@ def show():
             today_count = len(df_zikir_log[df_zikir_log['date'].dt.date == today_dt])
             progress_value = min(today_count/total_zikir,1.0) if total_zikir>0 else 0
             st.write(f"✅ {today_count}/{total_zikir} zikir telah dibaca hari ini ({progress_value*100:.1f}% progress)")
+            st.info("Interpretasi: Progress menunjukkan seberapa banyak zikir hari ini dibanding total zikir harian yang disarankan.")
             st.progress(progress_value)
 
             dates_with_zikir = df_zikir_log['date'].dt.date.unique()
             streak_zikir = calculate_streak(dates_with_zikir)
             st.info(f"🔥 Daily Streak zikir: {streak_zikir} hari")
+            st.info("Interpretasi: Streak menampilkan konsistensi harian membaca zikir. Semakin tinggi, semakin terjaga konsistensi spiritual.")
 
             df_zikir_log['day_only'] = df_zikir_log['date'].dt.date
             log_count = df_zikir_log.groupby('day_only', as_index=False).count().rename(columns={"zikir_id":"jumlah_zikir","day_only":"tanggal"})
             st.markdown("### 📊 Jumlah Zikir per Hari")
             st.plotly_chart(px.bar(log_count, x="tanggal", y="jumlah_zikir", color_discrete_sequence=["#1B5E20"]), use_container_width=True)
+            st.info("Interpretasi: Bar chart menunjukkan jumlah zikir per hari. Bisa membantu melihat hari-hari dengan aktivitas zikir tertinggi.")
 
             # Heatmap Zikir
             df_zikir_log['month'] = df_zikir_log['date'].dt.month
@@ -197,6 +203,7 @@ def show():
             fig.update_xaxes(title="Bulan", type='category', categoryorder='array', categoryarray=heatmap_pivot.columns.tolist())
             fig.update_yaxes(autorange="reversed", title="Hari/Tanggal")
             st.plotly_chart(fig, use_container_width=True)
+            st.info("Interpretasi: Heatmap menunjukkan distribusi jumlah zikir sepanjang bulan. Warna hijau lebih gelap = hari dengan jumlah zikir lebih banyak.")
 
             # Korelasi Mood vs zikir
             if not df_m_line.empty:
@@ -204,7 +211,8 @@ def show():
                 df_corr = pd.merge(df_m_line, zikir_per_day, on="date", how="left").fillna(0)
                 corr_value = df_corr['mood_score'].corr(df_corr['zikir_count'])
                 st.info(f"Korelasi rata-rata mood vs jumlah zikir harian: {corr_value:.2f}")
-
+                st.info("Interpretasi: Korelasi ini menunjukkan hubungan antara mood harian dan jumlah zikir. Nilai semakin positif → mood cenderung lebih baik jika rutin zikir.")
+                
     # ------------------ Challenge Dashboard ------------------
     with st.expander("🎯 Challenge Mindfulness Harian"):
         if df_challenge_done.empty:
@@ -232,14 +240,17 @@ def show():
                 tooltip=["Tanggal", "Jumlah"]
             )
             st.altair_chart(chart, use_container_width=True)
+            st.info("Interpretasi: Bar chart menunjukkan jumlah challenge yang diselesaikan tiap hari dalam seminggu terakhir. Bisa melihat konsistensi harian.")
 
             # Streak Challenge
             done_dates = df_challenge_done['day_only'].unique()
             streak = calculate_streak(done_dates)
             st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
+            st.info("Interpretasi: Streak menunjukkan jumlah hari berturut-turut menyelesaikan challenge. Semakin tinggi, semakin konsisten menjaga mindfulness.")
 
             # Riwayat Challenge
             st.subheader("📜 Riwayat Challenge")
             df_ch_display = df_challenge_done.copy()
             df_ch_display['date'] = df_ch_display['date'].dt.strftime("%Y-%m-%d")
             st.dataframe(df_ch_display.sort_values("date", ascending=False).reset_index(drop=True))
+            st.info("Interpretasi: Tabel riwayat menampilkan semua challenge yang telah diselesaikan. Membantu evaluasi progres jangka panjang.")

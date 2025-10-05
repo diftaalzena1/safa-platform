@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime
-from zoneinfo import ZoneInfo  # Python 3.9+
+from zoneinfo import ZoneInfo  
+from streamlit import st_autorefresh
 
 # Fungsi utama dashboard
 def show():

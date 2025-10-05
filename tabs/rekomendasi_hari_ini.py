@@ -101,9 +101,12 @@ def show():
     if streak >= 5:
         recommended_challenges = random.sample(challenges, 1)
         st.subheader(f"💤 Challenge Ringan (Streak: {streak} hari)")
+        st.info("Karena kamu sudah konsisten, hari ini cukup challenge ringan untuk menjaga ritme.")
     else:
         recommended_challenges = random.sample(challenges, 2)
         st.subheader(f"🏃 Challenge Hari Ini (Streak: {streak} hari)")
+        st.info("Karena streak-mu masih pendek, lakukan sedikit lebih banyak challenge untuk membangun konsistensi.")
+
     st.success("Challenge direkomendasikan berdasarkan streak harianmu untuk menjaga konsistensi, bukan mood.")
     for c in recommended_challenges:
         st.write(f"- **{c['title']}**: {c['desc']} (Durasi: {c['duration']//60} menit)")

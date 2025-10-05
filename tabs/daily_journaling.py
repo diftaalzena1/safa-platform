@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import pandas as pd
-from datetime import date
+from datetime import datetime, timezone, timedelta
 
 def show():
     st.header("Daily Journaling Islami")
@@ -10,9 +10,9 @@ def show():
     # ----------------- Template Refleksi -----------------
     st.markdown("#### Prompt Refleksi Harian ✍️")
     st.write(
-    "- Hari ini aku bersyukur karena…\n"
-    "- Satu hal yang membuatku bahagia hari ini…\n"
-    "- Aku ingin memperbaiki hal ini besok…"
+        "- Hari ini aku bersyukur karena…\n"
+        "- Satu hal yang membuatku bahagia hari ini…\n"
+        "- Aku ingin memperbaiki hal ini besok…"
     )
 
     # ----------------- Input -----------------
@@ -38,16 +38,20 @@ def show():
         if journal.strip() == "":
             st.warning("Isi refleksi harianmu dulu sebelum menyimpan!")
         else:
-            today = date.today().strftime("%Y-%m-%d")
+            # Gunakan WIB (UTC+7)
+            now_wib = datetime.now(timezone(timedelta(hours=7)))
+            today_str = now_wib.strftime("%Y-%m-%d")
+            st.caption(f"🕒 Refleksi disimpan pada: {now_wib.strftime('%A, %d %B %Y %H:%M:%S')} WIB")
+
             os.makedirs("data", exist_ok=True)
 
             # Simpan journal
-            pd.DataFrame({"date": [today], "journal": [journal]}).to_csv(
+            pd.DataFrame({"date": [today_str], "journal": [journal]}).to_csv(
                 "data/journal_data.csv", mode="a", index=False, header=False
             )
 
             # Simpan mood
-            pd.DataFrame({"date": [today], "mood": [mood]}).to_csv(
+            pd.DataFrame({"date": [today_str], "mood": [mood]}).to_csv(
                 "data/mood_data.csv", mode="a", index=False, header=False
             )
 

@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import pandas as pd
 import os
 from datetime import date, timedelta
@@ -43,7 +43,7 @@ def show():
         if not df.empty and 'date' in df.columns:
             df['date'] = pd.to_datetime(df['date'], errors='coerce')
 
-    today_dt = date.today()  # Hanya date, tidak perlu datetime
+    today_dt = date.today()  # langsung date
 
     # ------------------- Summary Panel -------------------
     col_s1, col_s2, col_s3, col_s4 = st.columns(4)
@@ -91,13 +91,6 @@ def show():
             st.info("Interpretasi: Membaca jurnal membantu refleksi dan evaluasi diri.")
 
     # ------------------ Mood ------------------
-    # Buat df_m_line global sebelum Zikir
-    if not df_m.empty:
-        df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
-        df_m_line = df_m.groupby('date')['mood_score'].mean().reset_index()
-    else:
-        df_m_line = pd.DataFrame()
-
     with col2.expander("😊 Mood Harian"):
         if df_m.empty:
             st.info("Belum ada data mood.")
@@ -112,6 +105,8 @@ def show():
             st.altair_chart(chart, use_container_width=True)
 
             # Mood Mingguan
+            df_m['mood_score'] = df_m['mood'].map({"Senang":5,"Biasa saja":4,"Sedih":3,"Cemas":2,"Stres":1})
+            df_m_line = df_m.groupby('date')['mood_score'].mean().reset_index()
             st.subheader("📈 Mood Mingguan (Rata-rata Skor)")
             st.altair_chart(
                 alt.Chart(df_m_line).mark_line(point=True).encode(
@@ -125,8 +120,7 @@ def show():
             df_m['month'] = df_m['date'].dt.month
             df_m['day'] = df_m['date'].dt.day
             heatmap_mood = df_m.groupby(['month','day'])['mood_score'].mean().reset_index()
-            heatmap_pivot = heatmap_mood.pivot(index='day', columns='month', values='mood_score').fillna(0)
-            heatmap_pivot = heatmap_pivot.sort_index()
+            heatmap_pivot = heatmap_mood.pivot(index='day', columns='month', values='mood_score').fillna(0).sort_index()
 
             hover_text = [
                 [f"Tanggal: {int(day):02d}-{int(month):02d}<br>Rata-rata Mood: {heatmap_pivot.loc[day, month]:.2f}"
@@ -162,17 +156,13 @@ def show():
             st.info("Belum ada data zikir dari Guided Zikir.")
         else:
             total_zikir = len(df_zikir) if not df_zikir.empty else 0
-            today_count = len(df_zikir_log[df_zikir_log['date']==today_dt])
+            today_count = len(df_zikir_log[df_zikir_log['date'].dt.date == today_dt])
             progress_value = min(today_count/total_zikir,1.0) if total_zikir>0 else 0
             st.write(f"✅ {today_count}/{total_zikir} zikir telah dibaca hari ini ({progress_value*100:.1f}% progress)")
             st.progress(progress_value)
 
             dates_with_zikir = df_zikir_log['date'].dt.date.unique()
-            streak_zikir = 0
-            current_day = today_dt.date()
-            while current_day in dates_with_zikir:
-                streak_zikir +=1
-                current_day -= timedelta(days=1)
+            streak_zikir = calculate_streak(dates_with_zikir)
             st.info(f"🔥 Daily Streak zikir: {streak_zikir} hari")
 
             df_zikir_log['day_only'] = df_zikir_log['date'].dt.date
@@ -180,11 +170,11 @@ def show():
             st.markdown("### 📊 Jumlah Zikir per Hari")
             st.plotly_chart(px.bar(log_count, x="tanggal", y="jumlah_zikir", color_discrete_sequence=["#1B5E20"]), use_container_width=True)
 
+            # Heatmap Zikir
             df_zikir_log['month'] = df_zikir_log['date'].dt.month
             df_zikir_log['day'] = df_zikir_log['date'].dt.day
             heatmap_df = df_zikir_log.groupby(['month','day'], as_index=False).count().rename(columns={"zikir_id":"jumlah_zikir"})
-            heatmap_pivot = heatmap_df.pivot(index='day', columns='month', values='jumlah_zikir').fillna(0)
-            heatmap_pivot = heatmap_pivot.sort_index()
+            heatmap_pivot = heatmap_df.pivot(index='day', columns='month', values='jumlah_zikir').fillna(0).sort_index()
 
             hover_text = [
                 [f"Hari: {day}<br>Bulan: {int(month)}<br>Jumlah zikir: {int(heatmap_pivot.loc[day, month])}"
@@ -217,62 +207,35 @@ def show():
 
     # ------------------ Challenge Dashboard ------------------
     with st.expander("🎯 Challenge Mindfulness Harian"):
-        done_file = "data/challenge_done.csv"
-        if os.path.exists(done_file):
-            try:
-                df_challenge_done = pd.read_csv(done_file)
-                if not set(["date", "challenge"]).issubset(df_challenge_done.columns):
-                    df_challenge_done = pd.read_csv(done_file, names=["date","challenge"])
-            except:
-                df_challenge_done = pd.DataFrame(columns=["date","challenge"])
+        if df_challenge_done.empty:
+            st.info("Belum ada data challenge. Selesaikan challenge di tab Daily Mindfulness untuk melihat progres di sini.")
         else:
-            df_challenge_done = pd.DataFrame(columns=["date","challenge"])
+            df_challenge_done['date'] = pd.to_datetime(df_challenge_done['date'], errors='coerce')
+            df_challenge_done['day_only'] = df_challenge_done['date'].dt.date
 
-        if not df_challenge_done.empty and "date" in df_challenge_done.columns:
-            df_challenge_done["date"] = pd.to_datetime(df_challenge_done["date"], errors="coerce")
-
-            weekly_df = df_challenge_done[
-                df_challenge_done["date"] >= pd.to_datetime(date.today() - timedelta(days=6))
-            ]
-            weekly_count = (
-                weekly_df.groupby(weekly_df["date"].dt.date)
-                .size()
-                .reindex(
-                    pd.date_range(date.today()-timedelta(days=6), date.today()).date,
-                    fill_value=0
-                )
+            # Progress Mingguan
+            weekly_df = df_challenge_done[df_challenge_done['date'] >= pd.to_datetime(today_dt - timedelta(days=6))]
+            weekly_count = weekly_df.groupby('day_only').size().reindex(
+                pd.date_range(today_dt - timedelta(days=6), today_dt).date, fill_value=0
             )
-
-            weekly_count.index = weekly_count.index.astype(str)
-            weekly_count = weekly_count.astype(int)
             weekly_count_df = weekly_count.reset_index()
             weekly_count_df.columns = ["Tanggal", "Jumlah"]
 
             st.subheader("📈 Progress Challenge Mingguan")
-            chart = (
-                alt.Chart(weekly_count_df)
-                .mark_bar(color="#1B5E20")
-                .encode(
-                    x=alt.X("Tanggal", sort=None),
-                    y=alt.Y("Jumlah", title="Jumlah Challenge"),
-                    tooltip=["Tanggal", "Jumlah"]
-                )
-                .properties(width=700)
-            )
+            chart = alt.Chart(weekly_count_df).mark_bar(color="#1B5E20").encode(
+                x=alt.X("Tanggal", sort=None),
+                y=alt.Y("Jumlah", title="Jumlah Challenge"),
+                tooltip=["Tanggal", "Jumlah"]
+            ).properties(width=700)
             st.altair_chart(chart, use_container_width=True)
 
-            done_dates = df_challenge_done["date"].dt.date.dropna().unique()
-            streak = 0
-            current_day = date.today()
-            while current_day in done_dates:
-                streak += 1
-                current_day -= timedelta(days=1)
+            # Streak Challenge
+            done_dates = df_challenge_done['day_only'].unique()
+            streak = calculate_streak(done_dates)
             st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
 
+            # Riwayat Challenge
             st.subheader("📜 Riwayat Challenge")
-            if not df_challenge_done.empty:
-                df_ch_display = df_challenge_done.copy()
-                df_ch_display['date'] = df_ch_display['date'].dt.strftime("%Y-%m-%d")
-                st.dataframe(df_ch_display.sort_values("date", ascending=False).reset_index(drop=True))
-            else:
-                st.info("Belum ada data challenge. Selesaikan challenge di tab Daily Mindfulness untuk melihat progres di sini.")
+            df_ch_display = df_challenge_done.copy()
+            df_ch_display['date'] = df_ch_display['date'].dt.strftime("%Y-%m-%d")
+            st.dataframe(df_ch_display.sort_values("date", ascending=False).reset_index(drop=True))

@@ -5,7 +5,6 @@ try:
 except ImportError:
     from backports.zoneinfo import ZoneInfo  # jika Python <3.9
 
-
 def show():
     st.title("🌿 Selamat Datang di SAFA")
     st.subheader("Your Spiritual Assistant for Faith & Awareness~")
@@ -59,46 +58,25 @@ def show():
     )
 
     if mood:
-        # Pesan sesuai mood
-        if "Senang" in mood:
-            msg = "Indahnya hati yang bahagia 🌼 Teruskan energi positifmu!"
-        elif "Biasa" in mood:
-            msg = "Hari yang tenang juga berharga 🌤️"
-        elif "Sedih" in mood:
-            msg = "Tidak apa-apa merasa sedih 🌧️ Luangkan waktu untuk dirimu."
-        elif "Cemas" in mood:
-            msg = "Tarik napas perlahan... kamu sudah berusaha dengan baik 🌿"
-        else:
-            msg = "Istirahatlah sejenak, semua akan baik-baik saja 💫"
-        st.success(f"{msg}")
+        st.success(f"Terima kasih telah berbagi, {nickname or 'teman'} 🌱 Semoga hatimu selalu tenang.")
 
-    # Fitur SAFA (pakai list HTML tanpa tanda "-")
-    st.markdown("### 🧭 Fitur SAFA")
-    st.markdown(
-        f"""
-        <p><b>{nickname or 'Kamu'}</b>, di sini kamu bisa:</p>
-        <ul style='list-style: none; padding-left: 0; line-height: 1.8;'>
-            <li>✍️ Menulis refleksi harian dan bersyukur</li>
-            <li>🕋 Zikir & meditasi harian</li>
-            <li>📊 Memantau mood dan perkembangan hatimu</li>
-        </ul>
-        """,
-        unsafe_allow_html=True,
+    # Fitur SAFA (tanpa emotikon)
+    st.markdown("### 🔹 Fitur SAFA")
+    st.write(
+        f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
+        "- Menulis refleksi harian dan bersyukur\n"
+        "- Melakukan zikir & meditasi harian\n"
+        "- Memantau mood dan perkembangan hatimu"
     )
 
-    # Motivasi Hari Ini (tanpa tanda "-" tapi tetap bergaya poin)
+    # Motivasi Hari Ini (tanpa emotikon)
     st.markdown("### 💡 Motivasi Hari Ini")
     st.info("“Sesungguhnya bersama kesulitan ada kemudahan.” (QS. Al-Insyirah: 6)")
 
-    st.markdown(
-        """
-        <ul style='list-style: none; padding-left: 0; line-height: 1.8;'>
-            <li>🌸 Luangkan 5 menit untuk introspeksi diri hari ini.</li>
-            <li>😊 Senyum dan syukuri satu hal kecil hari ini.</li>
-            <li>🌿 Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam.</li>
-        </ul>
-        """,
-        unsafe_allow_html=True,
+    st.write(
+        "- Luangkan 5 menit untuk introspeksi diri hari ini.\n"
+        "- Senyum dan syukuri satu hal kecil hari ini.\n"
+        "- Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
     )
 
     # Waktu saat ini di bawah

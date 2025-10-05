@@ -5,13 +5,12 @@ import time
 from datetime import datetime, timedelta, timezone, date
 
 def show():
-    st.header("Daily Mindfulness Challenge")
+    st.header("🌿🧘‍♂️ Daily Mindfulness Challenge")
     st.info("Pilih challenge yang ingin kamu selesaikan hari ini (1–5 menit).")
 
     # ----------------- Waktu Lokal WIB -----------------
     now_wib = datetime.now(timezone(timedelta(hours=7)))
     today_str = now_wib.strftime("%Y-%m-%d")
-    st.caption(f"🕒 Tanggal & Waktu Sekarang (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")
 
     # ----------------- Daftar Challenge -----------------
     challenges = [
@@ -126,3 +125,6 @@ def show():
         st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
     else:
         st.info("Belum ada streak challenge.")
+
+    st.markdown("---")
+    st.caption(f"🕒 Tanggal & Waktu Sekarang (WIB): {now_wib.strftime('%A, %d %B %Y %H:%M:%S')}")

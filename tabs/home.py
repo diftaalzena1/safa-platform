@@ -38,7 +38,7 @@ def show():
         """
         <style>
         .tight-section {
-            margin-bottom: -20px;
+            margin-bottom: -50px;
         }
         .stRadio > div {
             gap: 0.25rem !important; /* jarak antar opsi */

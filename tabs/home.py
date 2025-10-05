@@ -1,22 +1,24 @@
 import streamlit as st
 from datetime import datetime
 try:
-    from zoneinfo import ZoneInfo  # Python 3.9+
+    # Python 3.9+ built-in zoneinfo
+    from zoneinfo import ZoneInfo
 except ImportError:
-    from backports.zoneinfo import ZoneInfo  # jika Python <3.9
+    from backports.zoneinfo import ZoneInfo  # jika Python <3.9, install backports-zoneinfo
+
 
 def show():
     st.title("🌿 Selamat Datang di SAFA")
     st.subheader("Your Spiritual Assistant for Faith & Awareness~")
 
-    # Nama panggilan pengguna
+    # Meminta nama panggilan pengguna
     nickname = st.text_input("Hai! Siapa nama panggilanmu?", "")
 
-    # Waktu WIB
+    # Dapatkan waktu WIB
     wib_time = datetime.now(ZoneInfo("Asia/Jakarta"))
     hour = wib_time.hour
 
-    # Sapaan
+    # Sapaan berdasarkan waktu WIB
     if hour < 12:
         greeting = "Pagi"
     elif hour < 15:
@@ -26,30 +28,17 @@ def show():
     else:
         greeting = "Malam"
 
-    # Tampilkan sapaan
+    # Tampilkan sapaan personal
     if nickname:
         st.write(f"Selamat {greeting}, **{nickname}**! 💛")
+        st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
     else:
         st.write(f"Selamat {greeting}! 💛")
-    st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
+        st.write("Semoga hari ini penuh ketenangan dan inspirasi untuk hatimu.")
 
-    # Mood (versi jarak sangat rapat)
-    st.markdown(
-        """
-        <style>
-        .tight-section {
-            margin-bottom: -45px;
-        }
-        .stRadio > div {
-            gap: 0.25rem !important; /* jarak antar opsi */
-        }
-        </style>
-        <div class='tight-section'>
-            <h3>🌈 Bagaimana perasaanmu hari ini?</h3>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Interaktif: mood hari ini
+    st.markdown("### 🌈 Bagaimana perasaanmu hari ini?")
+    st.markdown("<div style='margin-top:-50px'></div>", unsafe_allow_html=True)  # kurangi jarak vertikal
 
     mood = st.radio(
         "",
@@ -57,28 +46,39 @@ def show():
         horizontal=True,
     )
 
+    # Pesan dinamis berdasarkan mood
     if mood:
-        st.success(f"Terima kasih telah berbagi, {nickname or 'teman'} 🌱 Semoga hatimu selalu tenang.")
+        if "Senang" in mood:
+            msg = "Indahnya hati yang bahagia 🌼 Teruskan energi positifmu!"
+        elif "Biasa saja" in mood:
+            msg = "Hari yang tenang juga berharga 🌤️"
+        elif "Sedih" in mood:
+            msg = "Tidak apa-apa merasa sedih 🌧️ Luangkan waktu untuk dirimu."
+        elif "Cemas" in mood:
+            msg = "Tarik napas perlahan... kamu sudah berusaha dengan baik 🌿"
+        else:
+            msg = "Istirahatlah sejenak, semua akan baik-baik saja 💫"
+        st.success(f"{msg}")
 
     # Fitur SAFA
-    st.markdown("### 🔹 Fitur SAFA")
+    st.markdown("### 🧭 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
-        "- Menulis refleksi harian dan bersyukur\n"
-        "- Zikir & meditasi harian\n"
-        "- Memantau mood dan perkembangan hatimu"
+        "- ✍️ Menulis refleksi harian dan bersyukur\n"
+        "- 🕋 Zikir & meditasi harian\n"
+        "- 📊 Memantau mood dan perkembangan hatimu"
     )
 
-    # Motivasi
-    st.markdown("### 💡 Motivasi Hari Ini")
+    # Motivasi harian
+    st.markdown("### ✨ Motivasi Hari Ini")
     st.info("“Sesungguhnya bersama kesulitan ada kemudahan.” (QS. Al-Insyirah: 6)")
 
     st.write(
-        "- Luangkan 5 menit untuk introspeksi diri hari ini.\n"
-        "- Senyum dan syukuri satu hal kecil hari ini.\n"
-        "- Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
+        "- 🌸 Luangkan 5 menit untuk introspeksi diri hari ini.\n"
+        "- 😊 Senyum dan syukuri satu hal kecil hari ini.\n"
+        "- 🌿 Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
     )
 
-    # Waktu saat ini di bawah
+    # Tampilkan waktu saat ini di bagian paling bawah
     st.markdown("---")
     st.markdown(f"⏰ **Waktu saat ini (WIB): {wib_time.strftime('%H:%M:%S')}**")

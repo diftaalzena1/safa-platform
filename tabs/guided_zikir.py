@@ -4,9 +4,9 @@ import os
 from datetime import datetime, date, timedelta, timezone
 
 def show():
-    st.header("Guided Zikir Harian")
+    st.header("🌿🕌 Guided Zikir Harian")
     st.info(
-        "Klik tombol 'Sudah Dibaca' untuk menandai zikir yang telah selesai dibaca hari ini.\n"
+        "Klik tombol 'Sudah Dibaca ✅' untuk menandai zikir yang telah selesai dibaca hari ini.\n"
         "Setiap klik akan langsung menambah progres tanpa perlu refresh."
     )
 
@@ -31,25 +31,24 @@ def show():
     today = pd.to_datetime(now_wib.strftime("%Y-%m-%d"))
 
     zikir_hikmah = {
-        "Subhanallah wa bihamdihi": "- Membersihkan hati dari kesombongan.",
-        "Astaghfirullahal 'azhim": "- Memohon ampunan dari dosa.",
-        "La ilaha illallah": "- Menguatkan keimanan dan tauhid.",
-        "Allahu Akbar": "- Mengingat kebesaran Allah.",
-        "Alhamdulillahi rabbil 'alamin": "- Mensyukuri nikmat Allah.",
-        "La hawla wa la quwwata illa billah": "- Menyerahkan diri pada kehendak Allah.",
-        "Subhanallahi wa bihamdihi subhanallahil 'azhim": "- Menghapus dosa dan meningkatkan pahala.",
-        "Astaghfirullahal lazi la ilaha illa huwa al-hayyul qayyum": "- Menyucikan hati dan pikiran.",
-        "Allahumma inni as'aluka al-jannah": "- Berdoa untuk surga.",
-        "Allahumma a'udzu bika min an-nar": "- Berdoa perlindungan dari neraka.",
+        "Subhanallah wa bihamdihi": "Membersihkan hati dari kesombongan.",
+        "Astaghfirullahal 'azhim": "Memohon ampunan dari dosa.",
+        "La ilaha illallah": "Menguatkan keimanan dan tauhid.",
+        "Allahu Akbar": "Mengingat kebesaran Allah.",
+        "Alhamdulillahi rabbil 'alamin": "Mensyukuri nikmat Allah.",
+        "La hawla wa la quwwata illa billah": "Menyerahkan diri pada kehendak Allah.",
+        "Subhanallahi wa bihamdihi subhanallahil 'azhim": "Menghapus dosa dan meningkatkan pahala.",
+        "Astaghfirullahal lazi la ilaha illa huwa al-hayyul qayyum": "Menyucikan hati dan pikiran.",
+        "Allahumma inni as'aluka al-jannah": "Berdoa untuk surga.",
+        "Allahumma a'udzu bika min an-nar": "Berdoa perlindungan dari neraka.",
     }
 
     if "read_count" not in st.session_state:
-        # Hitung zikir hari ini
         st.session_state.read_count = ((log_df['date'] == today).sum()
                                        if not log_df.empty else 0)
 
-    # ----------------- zikir dalam 2 kolom -----------------
-    with st.expander("🕌 Klik untuk melihat daftar zikir"):
+    # ----------------- Zikir dalam 2 kolom -----------------
+    with st.expander("📝 Klik untuk melihat daftar zikir"):
         cols = st.columns(2)
         for i, (_, row) in enumerate(zikir_df.iterrows()):
             zikir_id = row['zikir_id']
@@ -58,17 +57,16 @@ def show():
             col = cols[i % 2]
             with col:
                 if count_today > 0:
-                    st.success(f"✅ {zikir_text}\n{zikir_hikmah.get(zikir_text,'')} ({count_today}x hari ini)")
+                    st.success(f"✅ {zikir_text}\n💡 {zikir_hikmah.get(zikir_text,'')} ({count_today}x hari ini)")
                 else:
-                    st.warning(f"❌ {zikir_text}\n{zikir_hikmah.get(zikir_text,'')}")
+                    st.warning(f"❌ {zikir_text}\n💡 {zikir_hikmah.get(zikir_text,'')}")
 
                 key = f"{zikir_id}{today}"
-                if st.button("Sudah Dibaca", key=key):
+                if st.button("Sudah Dibaca ✅", key=key):
                     new_log = pd.DataFrame({"date":[today], "zikir_id":[zikir_id]})
                     new_log.to_csv(log_file, mode="a", index=False, header=False)
-                    # Update session langsung
                     st.session_state.read_count += 1
-                    count_today += 1  # update lokal
+                    count_today += 1
                     st.success(f"✅ {zikir_text} ditambahkan ke log hari ini!")
 
     # ----------------- Progress -----------------

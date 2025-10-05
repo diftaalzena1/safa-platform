@@ -167,7 +167,7 @@ def show():
 
             dates_with_zikir = df_zikir_log['date'].dt.date.unique()
             streak_zikir = calculate_streak(dates_with_zikir)
-            st.info(f"🔥 Daily Streak zikir: {streak_zikir} hari")
+            st.success(f"🔥 Daily Streak zikir: {streak_zikir} hari")
             st.info("Interpretasi: Streak menampilkan konsistensi harian membaca zikir. Semakin tinggi, semakin terjaga konsistensi spiritual.")
 
             df_zikir_log['day_only'] = df_zikir_log['date'].dt.date
@@ -245,7 +245,7 @@ def show():
             # Streak Challenge
             done_dates = df_challenge_done['day_only'].unique()
             streak = calculate_streak(done_dates)
-            st.info(f"🔥 Streak Challenge Mindfulness: {streak} hari")
+            st.success(f"🔥 Streak Challenge Mindfulness: {streak} hari")
             st.info("Interpretasi: Streak menunjukkan jumlah hari berturut-turut menyelesaikan challenge. Semakin tinggi, semakin konsisten menjaga mindfulness.")
 
             # Riwayat Challenge

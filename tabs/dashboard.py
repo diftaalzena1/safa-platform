@@ -214,19 +214,23 @@ def show():
             df_challenge_done['day_only'] = df_challenge_done['date'].dt.date
 
             # Progress Mingguan
-            weekly_df = df_challenge_done[df_challenge_done['date'] >= pd.to_datetime(today_dt - timedelta(days=6))]
+            start_date = today_dt - timedelta(days=6)
+            weekly_df = df_challenge_done[df_challenge_done['date'] >= pd.to_datetime(start_date)]
             weekly_count = weekly_df.groupby('day_only').size().reindex(
-                pd.date_range(today_dt - timedelta(days=6), today_dt).date, fill_value=0
+                pd.date_range(start_date, today_dt).date, fill_value=0
             )
+
+            # Buat dataframe dengan tanggal sebagai string agar X bersih
             weekly_count_df = weekly_count.reset_index()
             weekly_count_df.columns = ["Tanggal", "Jumlah"]
+            weekly_count_df["Tanggal"] = weekly_count_df["Tanggal"].astype(str)
 
             st.subheader("📈 Progress Challenge Mingguan")
             chart = alt.Chart(weekly_count_df).mark_bar(color="#1B5E20").encode(
-                x=alt.X("Tanggal", sort=None),
-                y=alt.Y("Jumlah", title="Jumlah Challenge"),
+                x=alt.X("Tanggal:N", title="Tanggal"),  # nominal/text supaya tidak muncul jam
+                y=alt.Y("Jumlah:Q", title="Jumlah Challenge", scale=alt.Scale(domain=[0, weekly_count_df["Jumlah"].max()+1])),
                 tooltip=["Tanggal", "Jumlah"]
-            ).properties(width=700)
+            )
             st.altair_chart(chart, use_container_width=True)
 
             # Streak Challenge

@@ -23,7 +23,7 @@ def show():
 
     # ----------------- Jika mood belum tercatat, minta user memilih -----------------
     if not mood:
-        st.warning("Mood hari ini belum tercatat. Silakan pilih moodmu atau kembali ke tab Daily Journaling agar rekomendasi lebih personal.")
+        st.warning("Mood hari ini belum tercatat. Silakan pilih moodmu atau kembali ke tab Daily Journaling.")
         mood_options = ["Sedih", "Cemas", "Stres", "Senang", "Biasa saja"]
         mood = st.selectbox("Pilih moodmu hari ini:", mood_options)
 

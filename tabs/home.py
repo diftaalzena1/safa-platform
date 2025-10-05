@@ -64,9 +64,9 @@ def show():
     st.markdown("### 🔹 Fitur SAFA")
     st.write(
         f"**{nickname or 'Kamu'}**, di sini kamu bisa:\n"
-        "- ✍️ Menulis refleksi harian dan bersyukur\n"
-        "- 🕋 Zikir & meditasi harian\n"
-        "- 📊 Memantau mood dan perkembangan hatimu"
+        "- Menulis refleksi harian dan bersyukur\n"
+        "- Zikir & meditasi harian\n"
+        "- Memantau mood dan perkembangan hatimu"
     )
 
     # Motivasi
@@ -74,9 +74,9 @@ def show():
     st.info("“Sesungguhnya bersama kesulitan ada kemudahan.” (QS. Al-Insyirah: 6)")
 
     st.write(
-        "- 🌸 Luangkan 5 menit untuk introspeksi diri hari ini.\n"
-        "- 😊 Senyum dan syukuri satu hal kecil hari ini.\n"
-        "- 🌿 Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
+        "- Luangkan 5 menit untuk introspeksi diri hari ini.\n"
+        "- Senyum dan syukuri satu hal kecil hari ini.\n"
+        "- Ambil jeda sejenak dari gadget dan tarik napas dalam-dalam."
     )
 
     # Waktu saat ini di bawah

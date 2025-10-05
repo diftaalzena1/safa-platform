@@ -206,27 +206,37 @@ def show():
                 st.info(f"Korelasi rata-rata mood vs jumlah zikir harian: {corr_value:.2f}")
 
     # ------------------ Challenge Dashboard ------------------
+    # ------------------ Challenge Dashboard ------------------
     with st.expander("🎯 Challenge Mindfulness Harian"):
         if df_challenge_done.empty:
             st.info("Belum ada data challenge. Selesaikan challenge di tab Daily Mindfulness untuk melihat progres di sini.")
         else:
-            df_challenge_done['date'] = pd.to_datetime(df_challenge_done['date'], errors='coerce')
             df_challenge_done['day_only'] = df_challenge_done['date'].dt.date
 
             # Progress Mingguan
-            weekly_df = df_challenge_done[df_challenge_done['date'] >= pd.to_datetime(today_dt - timedelta(days=6))]
-            weekly_count = weekly_df.groupby('day_only').size().reindex(
-                pd.date_range(today_dt - timedelta(days=6), today_dt).date, fill_value=0
+            start_date = today_dt - timedelta(days=6)
+            weekly_df = df_challenge_done[df_challenge_done['date'] >= start_date]
+            weekly_count = (
+                weekly_df.groupby('day_only')
+                .size()
+                .reindex(pd.date_range(start_date, today_dt).date, fill_value=0)
             )
+            weekly_count.index = weekly_count.index.astype(str)
+            weekly_count = weekly_count.astype(int)
             weekly_count_df = weekly_count.reset_index()
             weekly_count_df.columns = ["Tanggal", "Jumlah"]
 
             st.subheader("📈 Progress Challenge Mingguan")
-            chart = alt.Chart(weekly_count_df).mark_bar(color="#1B5E20").encode(
-                x=alt.X("Tanggal", sort=None),
-                y=alt.Y("Jumlah", title="Jumlah Challenge"),
-                tooltip=["Tanggal", "Jumlah"]
-            ).properties(width=700)
+            chart = (
+                alt.Chart(weekly_count_df)
+                .mark_bar(color="#1B5E20")
+                .encode(
+                    x=alt.X("Tanggal", sort=None),
+                    y=alt.Y("Jumlah", title="Jumlah Challenge"),
+                    tooltip=["Tanggal", "Jumlah"]
+                )
+                .properties(width=700)
+            )
             st.altair_chart(chart, use_container_width=True)
 
             # Streak Challenge

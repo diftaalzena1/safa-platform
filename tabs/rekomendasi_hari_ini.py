@@ -69,6 +69,7 @@ def show():
 
     recommended_zikir = mood_to_zikir.get(mood, random.sample(list(zikir_df['zikir_text']), min(2, len(zikir_df))))
     st.subheader("🕌 Zikir Direkomendasikan Hari Ini")
+    st.info("Zikir direkomendasikan berdasarkan mood hari ini agar lebih personal dan menenangkan hatimu.")
     for zikir in recommended_zikir:
         st.write(f"- **{zikir}** {zikir_hikmah.get(zikir,'')}")
 
@@ -103,8 +104,6 @@ def show():
     else:
         recommended_challenges = random.sample(challenges, 2)
         st.subheader(f"🏃 Challenge Hari Ini (Streak: {streak} hari)")
-
+    st.info("Challenge direkomendasikan berdasarkan streak harianmu untuk menjaga konsistensi, bukan mood.")
     for c in recommended_challenges:
         st.write(f"- **{c['title']}**: {c['desc']} (Durasi: {c['duration']//60} menit)")
-
-    st.success("💡 Catatan: Rekomendasi ini bersifat personal berdasarkan mood dan streak harianmu.")
